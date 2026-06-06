@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CookaBite - Cookies & Brownies Premium Homemade</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine JS for super smooth state management and dynamic carousels -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Playfair Display for Serifs & Plus Jakarta Sans for UI text -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom Theme Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            light: '#FFFDF9',     // Warm White
+                            cream: '#F4EAE1',     // Soft Cream
+                            creamdark: '#DFD0C2', // Medium Cream
+                            brownlight: '#C39B7C',// Soft Brown
+                            brown: '#8B5A2B',     // Rich Sweet Brown
+                            browndark: '#4A2C11', // Deep Chocolate
+                            accent: '#E07A5F'     // Soft Terracotta Warm
+                        }
+                    },
+                    animation: {
+                        'bounce-slow': 'bounce 3s infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #F4EAE1;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #C39B7C;
+            border-radius: 10px;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        html {
+            scroll-behavior: smooth;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        body {
+            transition: background-color 0.35s ease, color 0.35s ease;
+            opacity: 1;
+            animation: page-fade-in 0.8s ease-out 0.2s both;
+        }
+        * {
+            transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease, opacity 0.25s ease;
+        }
+        @keyframes page-fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        #intro-screen {
+            animation: intro-slide-down 1s ease 4s forwards;
+        }
+        @keyframes intro-slide-down {
+            from { opacity: 1; visibility: visible; transform: translateY(0); }
+            to { opacity: 0; visibility: hidden; transform: translateY(32px); }
+        }
+        header,
+        section,
+        footer {
+            opacity: 0;
+            transform: translateY(18px);
+            transition: opacity 0.55s ease, transform 0.55s ease;
+        }
+        body.ready header:not(.scroll-reveal),
+        body.ready section:not(.scroll-reveal),
+        body.ready footer:not(.scroll-reveal) {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        header,
+        section,
+        footer,
+        button,
+        a,
+        .cookie-marquee,
+        .product-card,
+        .advantage-card,
+        .testimonial-card,
+        .contact-card {
+            transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease, opacity 0.35s ease;
+        }
+        .cookie-marquee {
+            overflow: hidden;
+            position: relative;
+            width: 100vw;                    /* span full viewport */
+            left: 50%;
+            transform: translateX(-50%);     /* center full-bleed inside layout */
+            margin-top: -2.5rem;
+            background: #8B5A2B;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 0;
+            box-shadow: 0 12px 28px rgba(139, 90, 43, 0.12);
+            box-sizing: border-box;
+            touch-action: none;              /* avoid accidental horizontal pan on mobile */
+        }
+        .cookie-marquee__track {
+            display: inline-flex;
+            white-space: nowrap;
+            animation: marquee-scroll 20s linear infinite;
+        }
+        .cookie-marquee__item {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 3rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            color: #FFFDF9;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+        }
+        /* Make images responsive to prevent layout overflow on small devices */
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        @keyframes marquee-scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        /* Loading Screen Animations */
+        @keyframes spin-cookie {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.05); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(139, 90, 43, 0.4), 0 0 40px rgba(224, 122, 95, 0.2); }
+            50% { box-shadow: 0 0 30px rgba(139, 90, 43, 0.6), 0 0 60px rgba(224, 122, 95, 0.4); }
+        }
+        @keyframes fade-out {
+            0% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+        .loading-screen {
+            animation: fade-out 0.8s ease-out forwards;
+        }
+        .cookie-spinner {
+            animation: spin-cookie 3s ease-in-out infinite;
+        }
+        .glow-container {
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+        nav {
+            transition: background-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease;
+        }
+        body.scrolled nav {
+            background-color: rgba(255, 253, 249, 0.96);
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.08);
+            transform: translateY(0);
+        }
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(36px) scale(0.98);
+            transition: opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1), transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+            will-change: opacity, transform;
+        }
+        .scroll-reveal.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+        .scroll-reveal-card {
+            opacity: 0;
+            transform: translateY(26px) scale(0.98);
+            transition: opacity 0.65s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.65s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .scroll-reveal-card.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+        .scroll-reveal-heading {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .scroll-reveal-heading.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .scroll-reveal-left {
+            opacity: 0;
+            transform: translateX(-32px) scale(0.98);
+            transition: opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1), transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+            will-change: opacity, transform;
+        }
+        .scroll-reveal-left.visible {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+        }
+        .scroll-reveal-right {
+            opacity: 0;
+            transform: translateX(32px) scale(0.98);
+            transition: opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1), transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+            will-change: opacity, transform;
+        }
+        .scroll-reveal-right.visible {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+        }
+        .scroll-reveal-heading-left {
+            opacity: 0;
+            transform: translateX(-18px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+            will-change: opacity, transform;
+        }
+        .scroll-reveal-heading-left.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .scroll-reveal-heading-right {
+            opacity: 0;
+            transform: translateX(18px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+            will-change: opacity, transform;
+        }
+        .scroll-reveal-heading-right.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        /* Disable transitions for product detail modal text to avoid unwanted animation */
+        .product-detail-modal h1,
+        .product-detail-modal h2,
+        .product-detail-modal h3,
+        .product-detail-modal h4,
+        .product-detail-modal p,
+        .product-detail-modal span,
+        .product-detail-modal a,
+        .product-detail-modal small,
+        .product-detail-modal strong {
+            transition: none !important;
+        }
+
+        /* FAQ item distinct background colors for aesthetic variety */
+        .faq-item-1 { background: rgba(244,234,225,0.45) !important; }
+        .faq-item-2 { background: rgba(224,122,95,0.08) !important; }
+        .faq-item-3 { background: rgba(195,155,124,0.08) !important; }
+
+        /* Keep FAQ header text color consistent on click/focus */
+        #faq button {
+            color: #4A2C11 !important;
+        }
+        #faq button:focus,
+        #faq button:active,
+        #faq button:focus-visible {
+            color: #4A2C11 !important;
+            outline: none !important;
+            text-decoration: none !important;
+        }
+        #faq .faq-answer {
+            background-color: transparent !important;
+            color: #4A2C11 !important;
+        }
+        #faq .faq-answer,
+        #faq .faq-answer * {
+            color: #4A2C11 !important;
+        }
+        #faq button {
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-brand-light text-brand-browndark font-sans antialiased overflow-x-hidden" x-data="{ mobileMenu: false, isLoading: true, scrollContainer: null, scrollLeft() { if(this.scrollContainer) this.scrollContainer.scrollBy({ left: -300, behavior: 'smooth' }); }, scrollRight() { if(this.scrollContainer) this.scrollContainer.scrollBy({ left: 300, behavior: 'smooth' }); } }" @load="setTimeout(() => { isLoading = false }, 10000)">
+
+    <!-- LOADING SCREEN -->
+<div id="intro-screen" class="fixed inset-0 flex items-center justify-center bg-brand-light z-50 transition-opacity duration-1000">
+
+    <div id="cookie-rain" class="absolute inset-0 pointer-events-none z-10 overflow-hidden"></div>
+
+    <div id="central-circle" class="relative z-20 flex flex-col items-center justify-center text-center rounded-full bg-white/70 backdrop-blur-md p-10 border border-white/40 shadow-xl" style="width: min(320px,84vw); height: min(320px,84vw);">
+        <h1 class="font-serif text-5xl font-black text-brand-browndark tracking-tight mb-3">CookaBite</h1>
+        <p class="font-sans text-sm font-medium italic text-brand-brown">"Made your happiness with our cookies"</p>
+        
+        <div class="flex gap-2 mt-4">
+            <div class="w-2.5 h-2.5 rounded-full bg-brand-brown animate-bounce" style="animation-delay: 0s;"></div>
+            <div class="w-2.5 h-2.5 rounded-full bg-brand-brown animate-bounce" style="animation-delay: 0.2s;"></div>
+            <div class="w-2.5 h-2.5 rounded-full bg-brand-brown animate-bounce" style="animation-delay: 0.4s;"></div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes rain {
+        0% { top: -15%; transform: translateX(0) rotate(0deg); opacity: 0; }
+        10% { opacity: 1; }
+        95% { opacity: 1; }
+        100% { top: 115vh; transform: translateX(32px) rotate(360deg); opacity: 0; }
+    }
+    
+    .falling-cookie {
+        position: absolute;
+        top: -15%;
+        font-size: 64px; /* Ukuran emoji cookie (default, overriden per-item via JS) */
+        animation: rain linear forwards;
+        pointer-events: none;
+        z-index: 10;
+    }
+
+        /* Responsive adjustments for intro / cookie rain on small screens */
+        @media (max-width: 640px) {
+            #central-circle {
+                width: min(260px, 86vw) !important;
+                height: min(260px, 86vw) !important;
+                padding: 0.75rem !important;
+            }
+            #central-circle h1 { font-size: 1.6rem !important; }
+            #central-circle p { font-size: 0.75rem !important; }
+            .falling-cookie { font-size: 44px !important; }
+            .cookie-marquee__item { padding: 0.75rem 1.25rem; font-size: 0.8rem; }
+            /* Avoid very frequent cookie creation on low-width devices */
+            .cookie-marquee { margin-top: -1.25rem; }
+        }
+</style>
+
+<script>
+    function startCookieRain() {
+        const rainContainer = document.getElementById('cookie-rain');
+        if (!rainContainer) return;
+
+        // Adjust behavior for small/touch devices to avoid overcrowding and layout overflow
+        const isMobile = window.matchMedia('(max-width: 640px)').matches || ('ontouchstart' in window && navigator.maxTouchPoints > 0);
+        const intervalMs = isMobile ? 500 : 180;
+
+        setInterval(() => {
+            // spawn more cookies on desktop for a fuller effect, keep single on mobile
+            const spawnCount = isMobile ? 1 : (Math.random() < 0.55 ? 2 : (Math.random() < 0.25 ? 3 : 1));
+            for (let i = 0; i < spawnCount; i++) {
+                const cookie = document.createElement('div');
+                cookie.textContent = '🍪';
+                cookie.classList.add('falling-cookie');
+
+                // size ranges smaller on mobile
+                const size = isMobile ? Math.floor(Math.random() * 20 + 36) : Math.floor(Math.random() * 20 + 56); // mobile:36-56, desktop:56-76
+                cookie.style.fontSize = size + 'px';
+
+                // append first so we can measure width and avoid clustering at edges
+                rainContainer.appendChild(cookie);
+
+                // compute a left position that keeps cookie fully inside the container
+                const maxLeft = Math.max(0, rainContainer.clientWidth - cookie.offsetWidth);
+                const leftPx = Math.floor(Math.random() * (maxLeft || 1));
+                // add slight horizontal offset between spawned cookies
+                const extraOffset = i * Math.floor(Math.random() * 24 - 12);
+                cookie.style.left = (leftPx + extraOffset) + 'px';
+
+                // small initial drift on desktop so cookies don't perfectly overlap
+                if (!isMobile) cookie.style.transform = `translateX(${Math.floor(Math.random() * 36 - 18)}px)`;
+
+                // varied duration for a natural fall; slightly faster on mobile
+                cookie.style.animationDuration = (Math.random() * (isMobile ? 0.9 : 1.0) + (isMobile ? 1.8 : 2.0)) + 's';
+                cookie.style.animationDelay = (Math.random() * (isMobile ? 0.25 : 0.35)) + 's';
+                cookie.style.opacity = '0';
+                cookie.addEventListener('animationstart', () => cookie.style.opacity = '1');
+                cookie.addEventListener('animationend', () => cookie.remove());
+            }
+        }, intervalMs); // spawn rate adjusted based on device
+    }
+
+    function initializeIntro() {
+        startCookieRain();
+        document.body.classList.add('ready');
+
+        let lastScrollY = window.scrollY;
+        let isScrollingDown = false;
+
+        const scrollObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting && isScrollingDown) {
+                    entry.target.classList.add('visible');
+                    scrollObserver.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.15,
+            rootMargin: '0px 0px -10% 0px',
+        });
+
+        const revealSets = [
+            { selector: '#terlaris .rounded-3xl, #terlaris .rounded-2xl, #terlaris .relative, #terlaris .gap-6, #terlaris .bg-brand-light, #terlaris .bg-brand-cream', cls: 'scroll-reveal-right', delay: 40 },
+            { selector: '#testimoni .rounded-3xl, #testimoni .rounded-2xl, #testimoni .bg-brand-light, #testimoni .shadow-md, #testimoni .border', cls: 'scroll-reveal-left', delay: 45 },
+            { selector: '#tentang-kami .rounded-3xl, #tentang-kami .rounded-2xl, #tentang-kami .bg-brand-cream, #tentang-kami .bg-brand-light, #tentang-kami .relative, #tentang-kami .grid, #tentang-kami .space-y-6', cls: 'scroll-reveal-right', delay: 45 },
+            { selector: '#faq .rounded-2xl, #faq .border, #faq .bg-brand-cream, #faq .bg-brand-light', cls: 'scroll-reveal-left', delay: 35 },
+            { selector: '#kontak .rounded-3xl, #kontak .bg-brand-light, #kontak .bg-brand-cream, #kontak .border', cls: 'scroll-reveal-right', delay: 35 }
+        ];
+
+        revealSets.forEach(({ selector, cls, delay }) => {
+            document.querySelectorAll(selector).forEach((el, index) => {
+                el.classList.add(cls);
+                el.style.transitionDelay = `${index * delay}ms`;
+                scrollObserver.observe(el);
+            });
+        });
+
+        const headingSets = [
+            { selector: '#produk h2, #produk .text-center, #produk p', cls: 'scroll-reveal-heading' },
+            { selector: '#terlaris h2, #terlaris h3, #terlaris p, #terlaris .text-center', cls: 'scroll-reveal-heading-left' },
+            { selector: '#testimoni h2, #testimoni h3, #testimoni p, #testimoni .text-center', cls: 'scroll-reveal-heading-right' },
+            { selector: '#tentang-kami h2, #tentang-kami .inline-flex, #tentang-kami p', cls: 'scroll-reveal-heading-left' },
+            { selector: '#faq h2, #faq p, #faq .text-center', cls: 'scroll-reveal-heading' },
+            { selector: '#kontak h2, #kontak p, #kontak .text-center', cls: 'scroll-reveal-heading-right' }
+        ];
+
+        headingSets.forEach(({ selector, cls }) => {
+            document.querySelectorAll(selector).forEach((el) => {
+                el.classList.add(cls);
+                scrollObserver.observe(el);
+            });
+        });
+
+        window.addEventListener('scroll', () => {
+            const currentScrollY = window.scrollY;
+            isScrollingDown = currentScrollY > lastScrollY;
+            lastScrollY = currentScrollY;
+
+            if (currentScrollY > 16) {
+                document.body.classList.add('scrolled');
+            } else {
+                document.body.classList.remove('scrolled');
+            }
+        }, { passive: true });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeIntro);
+    } else {
+        initializeIntro();
+    }
+
+    // Sembunyikan intro setelah animasi fade selesai
+    setTimeout(() => {
+        const intro = document.getElementById('intro-screen');
+        if (intro) {
+            intro.style.display = 'none';
+            intro.style.visibility = 'hidden';
+            intro.style.pointerEvents = 'none';
+        }
+        const main = document.getElementById('main-content');
+        if (main) {
+            main.classList.add('ready');
+        }
+    }, 5200); // Delay sedikit lebih lama dari durasi animasi
+</script>
+
+<div id="main-content">
+    <!-- HEADER / NAVIGATION -->
+    <nav class="bg-brand-light/90 backdrop-blur-md sticky top-0 z-40 border-b border-brand-cream transition-all duration-300 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                
+                <!-- Brand Logo (CookaBite) - Clicking navigates to Home -->
+                <a href="#home" class="flex items-center gap-3 group">
+                    <img src="cookabite-logo.jpg" alt="CookaBite Logo" class="h-12 w-12 rounded-full object-cover border-2 border-brand-brownlight shadow-md transform group-hover:scale-105 transition-all duration-300">
+                    <div class="flex flex-col">
+                        <span class="font-serif text-2xl font-black text-brand-browndark tracking-tight leading-none">CookaBite</span>
+                        <!-- UPDATE: Tagline changed to 'Baked with Love, to Make Your Happiness' -->
+                        <span class="text-[9px] sm:text-[10px] text-brand-brown font-semibold tracking-wide mt-1">Baked with Love, to Make Your Happiness</span>
+                    </div>
+                </a>
+
+                <!-- Desktop Navigation Menu -->
+                <div class="hidden lg:flex items-center gap-6 font-medium">
+                    <a href="#home" class="text-brand-browndark hover:text-brand-brown transition-colors duration-200 relative after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-brand-brown hover:after:w-full after:transition-all after:duration-300">Beranda</a>
+                    <a href="#produk" class="text-brand-browndark hover:text-brand-brown transition-colors duration-200 relative after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-brand-brown hover:after:w-full after:transition-all after:duration-300">Produk</a>
+                    <a href="#terlaris" class="text-brand-browndark hover:text-brand-brown transition-colors duration-200 relative after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-brand-brown hover:after:w-full after:transition-all after:duration-300">Terlaris</a>
+                    <a href="#tentang-kami" class="text-brand-browndark hover:text-brand-brown transition-colors duration-200 relative after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-brand-brown hover:after:w-full after:transition-all after:duration-300">Tentang Kami</a>
+                    <a href="#testimoni" class="text-brand-browndark hover:text-brand-brown transition-colors duration-200 relative after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-brand-brown hover:after:w-full after:transition-all after:duration-300">Testimoni</a>
+                    <a href="#faq" class="text-brand-browndark hover:text-brand-brown transition-colors duration-200 relative after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-brand-brown hover:after:w-full after:transition-all after:duration-300">FAQ</a>
+                    <a href="#kontak" class="text-brand-browndark hover:text-brand-brown transition-colors duration-200 relative after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-brand-brown hover:after:w-full after:transition-all after:duration-300">Kontak</a>
+                </div>
+
+                <!-- Desktop CTA "Pesan Sekarang" -->
+                <div class="hidden lg:block">
+                    <a href="https://wa.me/628116350610?text=Halo%20Cookabite!%20Saya%20tertarik%20dengan%20produk%20anda" target="_blank" class="bg-brand-browndark hover:bg-brand-brown text-brand-light px-6 py-3 rounded-full font-bold text-sm transition-all duration-300 shadow-md hover:shadow-xl flex items-center gap-2 transform hover:-translate-y-0.5 active:translate-y-0">
+                        <span>Pesan Sekarang</span>
+                        <i class="fa-brands fa-whatsapp text-lg"></i>
+                    </a>
+                </div>
+
+                <!-- Mobile Navigation Trigger -->
+                <button @click="mobileMenu = !mobileMenu" class="lg:hidden text-brand-browndark p-2 focus:outline-none" aria-label="Toggle Menu">
+                    <i class="fa-solid" :class="mobileMenu ? 'fa-xmark text-2xl' : 'fa-bars text-2xl'"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Drawer Menu -->
+        <div x-show="mobileMenu" 
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 -translate-y-4"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 -translate-y-4"
+             class="lg:hidden bg-brand-light border-b border-brand-cream px-4 pt-2 pb-6 space-y-3 shadow-lg">
+            <a href="#home" @click="mobileMenu = false" class="block px-4 py-2 rounded-lg hover:bg-brand-cream text-brand-browndark font-medium">Beranda</a>
+            <a href="#produk" @click="mobileMenu = false" class="block px-4 py-2 rounded-lg hover:bg-brand-cream text-brand-browndark font-medium">Produk</a>
+            <a href="#terlaris" @click="mobileMenu = false" class="block px-4 py-2 rounded-lg hover:bg-brand-cream text-brand-browndark font-medium">Terlaris</a>
+            <a href="#tentang-kami" @click="mobileMenu = false" class="block px-4 py-2 rounded-lg hover:bg-brand-cream text-brand-browndark font-medium">Tentang Kami</a>
+            <a href="#testimoni" @click="mobileMenu = false" class="block px-4 py-2 rounded-lg hover:bg-brand-cream text-brand-browndark font-medium">Testimoni</a>
+            <a href="#faq" @click="mobileMenu = false" class="block px-4 py-2 rounded-lg hover:bg-brand-cream text-brand-browndark font-medium">FAQ</a>
+            <a href="#kontak" @click="mobileMenu = false" class="block px-4 py-2 rounded-lg hover:bg-brand-cream text-brand-browndark font-medium">Kontak</a>
+            <div class="pt-4 px-4">
+                <a href="https://wa.me/628116350610?text=Halo%20Cookabite!%20Saya%20tertarik%20dengan%20produk%20anda" target="_blank" class="w-full text-center bg-brand-browndark hover:bg-brand-brown text-brand-light py-3 rounded-full font-bold text-sm transition-all duration-300 shadow-md flex items-center justify-center gap-2">
+                    <span>Pesan Sekarang</span>
+                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <header id="home" class="relative overflow-hidden min-h-[90vh] flex items-center bg-gradient-to-br from-brand-light via-brand-cream/40 to-brand-cream">
+        <!-- Floating baking background details -->
+        <div class="absolute -top-12 -left-12 w-64 h-64 rounded-full bg-brand-cream/50 blur-3xl"></div>
+        <div class="absolute -bottom-16 -right-16 w-80 h-80 rounded-full bg-brand-brownlight/20 blur-3xl"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10 w-full">
+            <div class="grid lg:grid-cols-12 gap-12 items-center">
+                
+                <!-- Hero Text Block -->
+                <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                    <div class="inline-flex items-center gap-2 bg-brand-cream border border-brand-brownlight/30 text-brand-brown px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">
+                        <i class="fa-solid fa-cookie-bite text-brand-accent"></i>
+                        <span>Premium Homemade Taste</span>
+                    </div>
+                    
+                    <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl font-black text-brand-browndark leading-[1.15] tracking-tight">
+                        Cookies & Brownies • <span class="text-brand-brown block sm:inline italic font-serif">Homemade Favorit</span> Keluarga
+                    </h1>
+                    
+                    <p class="text-base sm:text-lg text-brand-browndark/80 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                        Dibuat dari bahan berkualitas dengan rasa yang selalu bikin ketagihan.
+                    </p>
+
+                    <!-- Interactive Action Buttons -->
+                    <div class="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
+                        <a href="#produk" class="w-full sm:w-auto text-center bg-brand-brown hover:bg-brand-browndark text-brand-light font-extrabold text-base px-8 py-4 rounded-full shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+                            Lihat Menu
+                        </a>
+                        <a href="https://wa.me/628116350610?text=Halo%20Cookabite!%20Saya%20tertarik%20dengan%20produk%20anda" target="_blank" class="w-full sm:w-auto text-center bg-brand-light hover:bg-brand-cream text-brand-browndark border-2 border-brand-brownlight/50 font-bold px-8 py-4 rounded-full transition-all duration-300 flex items-center justify-center gap-2 shadow-sm hover:shadow-md transform hover:-translate-y-1">
+                            <span>Pesan Sekarang</span>
+                            <i class="fa-brands fa-whatsapp text-lg text-green-600"></i>
+                        </a>
+                    </div>
+
+                    <!-- UPDATE: 'Bahan Premium Pilihan, Tanpa Pengawet Buatan, Dibuat Penuh Cinta' HAS BEEN REMOVED FROM HERE -->
+                </div>
+
+                <!-- Hero Media Block (Large Image representation of standard box/oven goodies) -->
+                <div class="lg:col-span-5 relative">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-brand-brownlight to-transparent rounded-3xl blur-2xl opacity-30 transform -rotate-6"></div>
+                    <div class="relative bg-brand-light p-4 rounded-3xl shadow-2xl border border-brand-cream transform hover:rotate-0 rotate-2 transition-all duration-500 hover:scale-[1.02]">
+                        <!-- Using main baking trays from Cookabite as the premium hero asset -->
+                        <div class="overflow-hidden rounded-2xl aspect-[4/3] bg-brand-cream relative">
+                            <img src="cookies-3-rasa.jpg" alt="Cookies 3 Rasa CookaBite" class="w-full h-full object-cover">
+                            <!-- UPDATE: 'Freshly Baked Today' badge removed from here -->
+                        </div>
+                        
+                        <!-- UPDATE: Floating Card 'Garam Himalaya' removed from here -->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- DYNAMIC PRODUCT CATALOG -->
+    <section id="produk" class="py-24 bg-brand-light" x-data="{
+        selectedProduct: null,
+        previewImage: null,
+        products: [
+            {
+                id: 5,
+                name: 'Cookies 100gr (Original / Coklat)',
+                price: 13000,
+                image: 'cookies-100-gr.jpeg',
+                desc: 'Cookies renyah dan gurih dalam kemasan higienis berstiker CookaBite seberat 100 gram. Tersedia pilihan rasa Original maupun Cokelat.',
+                detail: 'Varian kue kering renyah (crunchy cookies) kaya mentega berkualitas tinggi, dipadu butiran cokelat manis yang pas. Kemasannya sangat rapat sehingga tekstur renyah terjaga lama.'
+            },
+            {
+                id: 6,
+                name: 'Soft Cookies (Original / Red Velvet / Coklat)',
+                price: 12000,
+                image: 'cookies-3-rasa.jpg',
+                desc: 'Kue bertekstur empuk lumer (soft chewy cookies) istimewa dengan tiga varian rasa utama: Original Classic, Red Velvet, dan Cokelat.',
+                detail: 'Soft cookies raksasa buatan tangan dengan isian lumer yang lumer di mulut. Dibuat tanpa bahan pengawet kimia berbahaya, menjadikannya camilan teraman dan ternikmat untuk segala usia.'
+            },
+            {
+                id: 1,
+                name: 'Brownies ukuran 10x10',
+                price: 20000,
+                image: 'brownies-10x10.jpg',
+                desc: 'Fudgy Brownies berukuran 10x10 cm yang dipanggang sempurna dengan lapisan shiny crust yang mewah di atasnya.',
+                detail: 'Brownies istimewa berukuran kompak 10x10 cm, sangat pas untuk camilan santai pribadi atau hadiah manis untuk teman dekat. Menggunakan cokelat murni dan mentega berkualitas menghasilkan sensasi padat, lembut, dan fudgy.'
+            },
+            {
+                id: 2,
+                name: 'Brownies bite',
+                price: 15000,
+                image: 'brownies-bite-oval.jpeg',
+                desc: 'Potongan mini fudgy brownies seukuran sekali gigitan yang disajikan dalam wadah mangkuk ramah lingkungan (eco-friendly cup).',
+                detail: 'Camilan praktis berukuran bitesize dikemas higienis. Sempurna untuk menemani waktu kerja atau santai Anda bersama kopi hangat. Satu cup penuh dengan potongan kaya rasa cokelat.'
+            },
+            {
+                id: 3,
+                name: 'Brownies ukuran 20x10',
+                price: 40000,
+                image: 'brownies-20x10.jpg',
+                desc: 'Brownies panggang ukuran sedang 20x10 cm yang sangat ideal untuk sajian berkumpul bersama teman dekat maupun keluarga.',
+                detail: 'Dibuat dengan bahan-bahan premium dan teknik panggang presisi. Brownies ini menyajikan keseimbangan rasa cokelat hitam yang kaya dan rasa manis alami berkat penambahan garam mineral pegunungan Himalaya.'
+            },
+            {
+                id: 4,
+                name: 'Brownies ukuran 30x10',
+                price: 65000,
+                image: 'brownies-30x10.jpg',
+                desc: 'Fudgy Brownies premium loyang panjang 30x10 cm, pilihan tepat untuk perayaan, hantaran ulang tahun, maupun kado spesial.',
+                detail: 'Ukuran jumbo paling memuaskan dari Cookabite. Tekstur cokelat panggang lumer, renyah tipis di luar (shiny crust), dan sangat kenyal lembut (chewy fudgy) di dalam. Bisa request topping mix.'
+            }
+        ],
+        formatRupiah(val) {
+            return 'Rp ' + val.toLocaleString('id-ID');
+        },
+        buildWhatsAppLink(productName) {
+            let encodedMsg = encodeURIComponent('Halo CookaBite! Saya tertarik untuk melakukan pre-order produk premium Anda: ' + productName + '. Bagaimana prosedur pre-order selanjutnya?');
+            return 'https://wa.me/628116350610?text=' + encodedMsg;
+        },
+        openPreview(image) {
+            this.previewImage = image;
+        },
+        closePreview() {
+            this.previewImage = null;
+        }
+    }">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="cookie-marquee mb-12">
+                <div class="cookie-marquee__track">
+                    <span class="cookie-marquee__item">🍪 CookaBite • Fresh Homemade Cookies • Homemade Cookies Terbaik • Snack Premium • CookaBite 🍪</span>
+                    <span class="cookie-marquee__item">🍪 CookaBite • Fresh Homemade Cookies • Homemade Cookies Terbaik • Snack Premium • CookaBite 🍪</span>
+                </div>
+            </div>
+
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+                <div class="inline-flex items-center gap-1.5 bg-brand-cream text-brand-brown px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                    <i class="fa-solid fa-box-open"></i>
+                    <span>Katalog Lengkap Kami</span>
+                </div>
+                <h2 class="font-serif text-3xl sm:text-4xl font-black text-brand-browndark">
+                    Pilihan Produk Homemade CookaBite
+                </h2>
+                <p class="text-brand-browndark/70">
+                    Silakan temukan camilan manis premium favorit Anda. Klik tombol detail untuk informasi lengkap atau tombol pre-order untuk langsung memesan ke WhatsApp kami.
+                </p>
+            </div>
+
+            <!-- Products Scroll Layout -->
+            <div class="relative group">
+                <!-- Left Scroll Indicator -->
+                <div class="absolute left-0 top-1/2 -translate-y-1/2 z-20 pointer-events-auto hidden md:flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-r from-brand-light via-brand-light to-transparent group-hover:from-brand-light group-hover:via-brand-cream cursor-pointer hover:scale-110 transition-transform" @click="scrollLeft()" title="Scroll kiri">
+                    <i class="fa-solid fa-chevron-left text-brand-browndark text-xl font-bold"></i>
+                </div>
+                
+                <div class="flex gap-4 overflow-x-auto overflow-y-visible pb-4 hide-scrollbar snap-x snap-mandatory" x-init="scrollContainer = $el">
+                    <template x-for="product in products" :key="product.id">
+                    <div class="bg-brand-cream/20 rounded-3xl overflow-hidden border border-brand-cream shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 active:scale-[1.02] active:shadow-2xl active:duration-150 flex-shrink-0 min-w-[220px] sm:min-w-[240px] md:min-w-[260px] lg:min-w-[280px] max-w-[300px] flex flex-col justify-between group snap-start">
+                        
+                        <!-- Card Image -->
+                        <div class="relative overflow-hidden aspect-video bg-brand-cream">
+                            <img :src="product.image" :alt="product.name" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.onerror=null;this.src='https://via.placeholder.com/800x600/8B5A2B/FFF?text=CookaBite';">
+                        </div>
+
+                        <!-- Card Content -->
+                        <div class="p-6 space-y-4 flex-grow flex flex-col justify-between">
+                            <div class="space-y-2">
+                                <h3 class="font-serif text-xl font-bold text-brand-browndark group-hover:text-brand-brown transition-colors duration-200" x-text="product.name"></h3>
+                                <p class="text-sm text-brand-browndark/70 line-clamp-2 leading-relaxed" x-text="product.desc"></p>
+                            </div>
+
+                            <div class="pt-4 border-t border-brand-cream/80 flex items-center justify-between">
+                                <span class="text-xs font-black text-brand-brown" x-text="formatRupiah(product.price)"></span>
+                                <div class="flex items-center gap-2 flex-nowrap">
+                                    <button @click="selectedProduct = product" class="text-xs font-bold text-brand-browndark bg-brand-cream hover:bg-brand-creamdark px-2.5 py-2 rounded-lg transition-colors duration-200 whitespace-nowrap" aria-label="Open detail modal">
+                                        Detail
+                                    </button>
+                                    <!-- UPDATE: Button 'Beli' changed to 'PO Sekarang' -->
+                                    <a :href="buildWhatsAppLink(product.name)" target="_blank" class="text-[11px] font-bold text-white bg-brand-brown hover:bg-brand-browndark px-3 py-2 rounded-lg transition-colors duration-200 flex items-center gap-1.5 whitespace-nowrap">
+                                        <span>PO Sekarang</span>
+                                        <i class="fa-brands fa-whatsapp"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </template>
+                </div>
+                
+                <!-- Right Scroll Indicator -->
+                <div class="absolute right-0 top-1/2 -translate-y-1/2 z-20 pointer-events-auto hidden md:flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-l from-brand-light via-brand-light to-transparent group-hover:from-brand-light group-hover:via-brand-cream cursor-pointer hover:scale-110 transition-transform" @click="scrollRight()" title="Scroll kanan">
+                    <i class="fa-solid fa-chevron-right text-brand-browndark text-xl font-bold"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRODUCT DETAIL DIALOG (MODAL) -->
+        <div x-show="selectedProduct" class="fixed inset-0 z-[60] overflow-y-auto min-h-screen flex items-center justify-center p-3 bg-brand-browndark/70 backdrop-blur-sm" x-transition.opacity>
+            <div x-show="selectedProduct" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95 translate-y-6" x-transition:enter-end="opacity-100 scale-100 translate-y-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 scale-100 translate-y-0" x-transition:leave-end="opacity-0 scale-95 translate-y-6" class="product-detail-modal relative bg-brand-light max-w-[380px] w-[min(90vw,360px)] sm:w-[min(82vw,520px)] rounded-3xl shadow-2xl overflow-hidden border border-brand-cream max-h-[80vh] flex flex-col z-[70]" @click.away="selectedProduct = null">
+                <!-- Modal Top bar image -->
+                <div class="relative h-44 sm:h-56 bg-brand-cream cursor-pointer" @click.stop="openPreview(selectedProduct ? selectedProduct.image : null)" title="Klik untuk memperbesar">
+                    <img :src="selectedProduct ? selectedProduct.image : ''" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://via.placeholder.com/800x600/8B5A2B/FFF?text=CookaBite';">
+                    <div class="absolute inset-x-0 bottom-0 bg-brand-browndark/70 text-brand-light text-xs text-center py-2">Klik gambar untuk melihat penuh</div>
+                    <button @click.stop="selectedProduct = null" class="absolute top-4 right-4 bg-brand-browndark/80 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-brand-accent transition-colors" aria-label="Close modal">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="p-4 sm:p-6 flex flex-col overflow-hidden">
+                    <div class="space-y-4 overflow-y-auto pr-2" style="max-height: calc(100vh - 20rem);">
+                        <h3 class="font-serif text-xl sm:text-2xl font-black text-brand-browndark" x-text="selectedProduct ? selectedProduct.name : ''"></h3>
+                        <p class="text-sm sm:text-base font-bold text-brand-brown" x-text="selectedProduct ? formatRupiah(selectedProduct.price) : ''"></p>
+                        
+                        <div class="space-y-2">
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-brand-brownlight">Deskripsi Rasa & Ukuran</h4>
+                            <p class="text-sm text-brand-browndark/80 leading-relaxed" x-text="selectedProduct ? selectedProduct.detail : ''"></p>
+                        </div>
+
+                        <div class="bg-brand-cream/30 p-4 rounded-2xl space-y-2">
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-brand-brown">Informasi Pembuatan</h4>
+                            <p class="text-xs text-brand-browndark/70 leading-relaxed">
+                                Setiap porsi di CookaBite dibuat secara custom pre-order demi menjaga cita rasa maksimal saat tiba di rumah Anda. Menggunakan bahan-bahan bersertifikasi halal.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 flex flex-col sm:flex-row items-center gap-3">
+                        <button @click="selectedProduct = null" class="w-full sm:w-1/2 px-4 py-2 text-xs font-semibold border border-brand-creamdark text-brand-browndark rounded-2xl hover:bg-brand-cream/30 transition-colors whitespace-nowrap">
+                            Tutup
+                        </button>
+                        <a :href="selectedProduct ? buildWhatsAppLink(selectedProduct.name) : '#'" target="_blank" class="w-full sm:w-1/2 px-3 py-2 text-xs font-semibold bg-brand-brown hover:bg-brand-browndark text-brand-light rounded-2xl text-center flex items-center justify-center gap-2 transition-colors whitespace-nowrap">
+                            <span>PO Sekarang</span>
+                            <i class="fa-brands fa-whatsapp text-xs"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- IMAGE PREVIEW OVERLAY -->
+        <div x-show="previewImage" class="fixed inset-0 z-[100] bg-brand-browndark/90 backdrop-blur-xl flex items-center justify-center p-6" x-transition.opacity @click="closePreview">
+            <div x-show="previewImage" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95 translate-y-6" x-transition:enter-end="opacity-100 scale-100 translate-y-0" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 scale-100 translate-y-0" x-transition:leave-end="opacity-0 scale-95 translate-y-6" class="relative max-w-2xl w-full max-h-[80vh] overflow-hidden rounded-[28px] shadow-2xl bg-brand-light border border-brand-cream" @click.stop>
+                <img :src="previewImage" alt="Preview produk CookaBite" class="w-full h-full object-contain bg-brand-brownlight" onerror="this.onerror=null;this.src='https://via.placeholder.com/1200x900/8B5A2B/FFF?text=CookaBite';">
+                <button @click="closePreview" class="absolute top-3 right-3 bg-brand-light/95 text-brand-browndark w-10 h-10 rounded-full flex items-center justify-center shadow-lg hover:bg-brand-light transition-colors" aria-label="Tutup preview">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- BEST SELLERS CAROUSEL SECTION -->
+    <section id="terlaris" class="py-24 bg-brand-cream/20 border-y border-brand-cream" x-data="{
+        activeSlide: 0,
+        /* UPDATE: Only show 'Brownies ukuran 10x10' and 'Cookies 100gr (Original / Coklat)' */
+        bestSellers: [
+            {
+                name: 'Brownies ukuran 10x10',
+                desc: 'Fudgy Brownies berukuran 10x10 cm yang dipanggang sempurna dengan lapisan shiny crust yang mewah di atasnya.',
+                price: 'Rp 20.000',
+                image: 'brownies-10x10.jpg',
+                link: 'https://wa.me/628116350610?text=Halo%20CookaBite!%20Saya%20tertarik%20dengan%20produk%20terlaris%20Brownies%20ukuran%2010x10.'
+            },
+            {
+                name: 'Cookies 100gr (Original / Coklat)',
+                desc: 'Cookies renyah dan gurih dalam kemasan higienis berstiker CookaBite seberat 100 gram. Tersedia pilihan rasa Original maupun Cokelat.',
+                price: 'Rp 13.000',
+                image: 'cookies-100-gr.jpeg',
+                link: 'https://wa.me/628116350610?text=Halo%20CookaBite!%20Saya%20tertarik%20dengan%20produk%20terlaris%20Cookies%20100gr%20(Original%20%2F%20Coklat).'
+            }
+        ],
+        nextSlide() {
+            this.activeSlide = (this.activeSlide + 1) % this.bestSellers.length;
+        },
+        prevSlide() {
+            this.activeSlide = (this.activeSlide - 1 + this.bestSellers.length) % this.bestSellers.length;
+        }
+    }">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+                <div class="space-y-2">
+                    <div class="inline-flex items-center gap-1.5 bg-brand-cream text-brand-brown px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                        <i class="fa-solid fa-star text-brand-accent"></i>
+                        <span>Produk Unggulan Terlaris</span>
+                    </div>
+                    <h2 class="font-serif text-3xl sm:text-4xl font-black text-brand-browndark">Favorit Pecinta CookaBite</h2>
+                </div>
+                <!-- Control Buttons -->
+                <div class="flex items-center gap-3">
+                    <button @click="prevSlide" class="w-12 h-12 rounded-full border border-brand-brownlight/30 bg-brand-light flex items-center justify-center text-brand-browndark hover:bg-brand-brown hover:text-white transition-colors duration-200" aria-label="Slide Terlaris Sebelumnya">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <button @click="nextSlide" class="w-12 h-12 rounded-full border border-brand-brownlight/30 bg-brand-light flex items-center justify-center text-brand-browndark hover:bg-brand-brown hover:text-white transition-colors duration-200" aria-label="Slide Terlaris Berikutnya">
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Carousel Display Container -->
+            <div class="relative overflow-hidden min-h-[460px] md:min-h-[380px]">
+                <template x-for="(item, index) in bestSellers" :key="index">
+                    <div x-show="activeSlide === index" 
+                         x-bind:x-transition:enter="item.name.includes('Cookies') ? undefined : 'transition ease-out duration-500 transform'"
+                         x-bind:x-transition:enter-start="item.name.includes('Cookies') ? undefined : 'opacity-0 translate-x-12'"
+                         x-bind:x-transition:enter-end="item.name.includes('Cookies') ? undefined : 'opacity-100 translate-x-0'"
+                         x-bind:x-transition:leave="item.name.includes('Cookies') ? undefined : 'transition ease-in duration-300 transform absolute inset-0'"
+                         x-bind:x-transition:leave-start="item.name.includes('Cookies') ? undefined : 'opacity-100 translate-x-0'"
+                         x-bind:x-transition:leave-end="item.name.includes('Cookies') ? undefined : 'opacity-0 -translate-x-12'"
+                         class="w-full group">
+                        
+                        <div class="grid md:grid-cols-12 gap-8 items-center bg-brand-light rounded-3xl p-6 md:p-10 border border-brand-cream shadow-md transition-all duration-300 group-hover:shadow-xl">
+                            
+                            <!-- Slider Image -->
+                            <div class="md:col-span-5 overflow-hidden rounded-3xl aspect-[4/3] bg-brand-cream border-4 border-brand-brown/75 shadow-inner transition-all duration-500 group-hover:border-brand-browndark group-hover:-translate-y-1">
+                                <img :src="item.image" :alt="item.name" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onerror="this.onerror=null;this.src='https://via.placeholder.com/800x600/8B5A2B/FFF?text=CookaBite';">
+                            </div>
+
+                            <!-- Slider Texts & Purchase Link -->
+                            <div class="md:col-span-7 space-y-4 md:space-y-6">
+                                <div class="inline-flex bg-brand-cream/50 text-brand-brown text-xs font-bold px-3 py-1 rounded-full uppercase">
+                                    Best Seller
+                                </div>
+                                <h3 class="font-serif text-2xl sm:text-3xl font-black text-brand-browndark" x-text="item.name"></h3>
+                                <p class="text-base text-brand-browndark/80 leading-relaxed" x-text="item.desc"></p>
+                                
+                                <div class="pt-4 flex flex-wrap items-center justify-between gap-4 border-t border-brand-cream">
+                                    <div>
+                                        <span class="text-xs text-brand-brownlight block font-bold uppercase tracking-wider">Harga Spesial</span>
+                                        <span class="text-3xl font-serif font-black text-brand-brown" x-text="item.price"></span>
+                                    </div>
+                                    <!-- UPDATE: Changed text from 'Beli' to 'PO Sekarang' -->
+                                    <a :href="item.link" target="_blank" class="bg-brand-brown hover:bg-brand-browndark text-brand-light font-bold px-6 py-3.5 rounded-xl transition-all duration-300 flex items-center gap-2 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                                        <span>PO Sekarang</span>
+                                        <i class="fa-brands fa-whatsapp text-lg"></i>
+                                    </a>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </template>
+            </div>
+        </div>
+    </section>
+
+    <!-- ABOUT US SECTION -->
+    <section id="tentang-kami" class="py-24 bg-brand-light">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                
+                <!-- Story Graphics -->
+                <div class="relative order-2 lg:order-1">
+                    <div class="absolute -inset-1 rounded-3xl bg-gradient-to-tr from-brand-brown to-brand-cream blur-xl opacity-30 transform rotate-3"></div>
+                    <div class="relative bg-brand-cream p-4 rounded-3xl shadow-xl border border-brand-cream/80">
+                        <img src="cookies-ori.jpg" alt="CookaBite Baking Passion" class="w-full h-auto rounded-2xl object-cover shadow-inner">
+                    </div>
+                </div>
+
+                <!-- Story Text Details -->
+                <div class="space-y-8 order-1 lg:order-2">
+                    <div class="space-y-4">
+                        <div class="inline-flex items-center gap-1.5 bg-brand-cream text-brand-brown px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                            <i class="fa-solid fa-heart"></i>
+                            <span>Cerita CookaBite</span>
+                        </div>
+                        <h2 class="font-serif text-3xl sm:text-4xl font-black text-brand-browndark">
+                            Dari Oven Kecil, Melahirkan Kebahagiaan Besar
+                        </h2>
+                    </div>
+
+                    <!-- UPDATE: Exact custom story as requested -->
+                    <p class="text-brand-browndark/90 leading-relaxed text-base sm:text-lg bg-brand-cream/10 p-5 border-l-4 border-brand-brown rounded-r-2xl">
+                        Cookabite merupakan usaha yang bergerak di bidang kuliner dengan fokus pada produk cookies dan brownies. Usaha ini berawal dari hobi memasak yang kemudian berkembang menjadi peluang usaha setelah mendapatkan respons positif dari keluarga dan teman-teman. Cookabite hadir untuk menghadirkan produk manis berkualitas yang dapat menemani berbagai momen anda.
+                    </p>
+
+                    <!-- UPDATE: Vision and Mission block is completely REMOVED -->
+
+                    <!-- UPDATE: Redesigned the "Keunggulan" block to be significantly more visual & modern, and deleted "Tanpa Pengawet Berbahaya" -->
+                    <div class="space-y-6">
+                        <div class="border-b border-brand-cream pb-3">
+                            <h3 class="font-serif text-2xl font-black text-brand-browndark">Keunggulan CookaBite</h3>
+                            <p class="text-xs text-brand-brownlight font-medium mt-1 uppercase tracking-wider">Kenapa produk kami selalu dirindukan keluarga</p>
+                        </div>
+                        
+                        <div class="grid sm:grid-cols-3 gap-6">
+                            
+                            <!-- Premium Advantage Card 1: Bahan Premium -->
+                            <div class="group relative p-6 bg-gradient-to-b from-brand-light to-brand-cream/30 border border-brand-cream/80 rounded-3xl shadow-sm hover:shadow-lg hover:-translate-y-2 transition-all duration-300 space-y-3 overflow-hidden">
+                                <div class="absolute top-0 left-0 w-1.5 h-full bg-brand-brown"></div>
+                                <div class="w-12 h-12 rounded-full bg-brand-cream flex items-center justify-center text-brand-brown text-xl shadow-inner group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-crown text-amber-500"></i>
+                                </div>
+                                <h4 class="font-black text-base text-brand-browndark tracking-tight font-serif">Bahan Premium</h4>
+                                <p class="text-xs text-brand-browndark/70 leading-relaxed">Diproses murni menggunakan bahan mentega dan cokelat terbaik kelas dunia.</p>
+                            </div>
+
+                            <!-- Premium Advantage Card 2: Garam Himalaya -->
+                            <div class="group relative p-6 bg-gradient-to-b from-brand-light to-brand-cream/30 border border-brand-cream/80 rounded-3xl shadow-sm hover:shadow-lg hover:-translate-y-2 transition-all duration-300 space-y-3 overflow-hidden">
+                                <div class="absolute top-0 left-0 w-1.5 h-full bg-brand-accent"></div>
+                                <div class="w-12 h-12 rounded-full bg-brand-cream flex items-center justify-center text-brand-accent text-xl shadow-inner group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-mountain"></i>
+                                </div>
+                                <h4 class="font-black text-base text-brand-browndark tracking-tight font-serif">Garam Himalaya</h4>
+                                <p class="text-xs text-brand-browndark/70 leading-relaxed">Menggunakan garam mineral alami sebagai rahasia keseimbangan manis murni.</p>
+                            </div>
+
+                            <!-- Premium Advantage Card 3: Higienis -->
+                            <div class="group relative p-6 bg-gradient-to-b from-brand-light to-brand-cream/30 border border-brand-cream/80 rounded-3xl shadow-sm hover:shadow-lg hover:-translate-y-2 transition-all duration-300 space-y-3 overflow-hidden">
+                                <div class="absolute top-0 left-0 w-1.5 h-full bg-brand-brownlight"></div>
+                                <div class="w-12 h-12 rounded-full bg-brand-cream flex items-center justify-center text-brand-brown text-xl shadow-inner group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-soap text-blue-400"></i>
+                                </div>
+                                <h4 class="font-black text-base text-brand-browndark tracking-tight font-serif">Higienis</h4>
+                                <p class="text-xs text-brand-browndark/70 leading-relaxed">Proses pemanggangan berstandar dapur bersih tinggi demi jaminan mutu alami.</p>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- UPDATE: 'USP: No Preservatives (Tanpa Pengawet Berbahaya)' is REMOVED -->
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CUSTOMER TESTIMONIALS SECTION -->
+    <section id="testimoni" class="py-24 bg-brand-cream/20 border-y border-brand-cream" x-data="{
+        testimonials: [
+            { name: 'Sarah Amanda', rating: 5, ulasan: 'Brownies bite-nya luar biasa! Crunchy di luar tapi sangat lumer di dalam. Cocok sekali menemani sore hari bersama segelas susu hangat.' },
+            { name: 'Fakhri Ramadhan', rating: 5, ulasan: 'Soft cookies red velvet-nya empuk sekali, tidak terlalu manis berlebih. Top banget pre-ordernya kilat.' },
+            { name: 'Dewi Lestari', rating: 4, ulasan: 'Sudah memesan brownies ukuran 30x10 sebagai parsel hampers lebaran. Keluarga besar semuanya suka dan memuji rasanya premium.' }
+        ],
+        reviewIndex: 0,
+        newName: '',
+        newRating: 5,
+        newComment: '',
+        feedbackMsg: '',
+        feedbackError: false,
+        apiStatus: 'unknown',
+        serverMessage: '',
+        
+        init() {
+            this.fetchReviews();
+        },
+        fetchReviews() {
+            const apiUrl = './rating.php';
+            fetch(apiUrl, { cache: 'no-store' })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('Rating server tidak tersedia (HTTP ' + response.status + ')');
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    this.apiStatus = 'ready';
+                    if (Array.isArray(data) && data.length) {
+                        this.testimonials = data.map((item) => ({
+                            name: item.nama ?? item.name ?? 'Pelanggan',
+                            rating: parseInt(item.rating, 10) || 5,
+                            ulasan: item.ulasan ?? item.review ?? ''
+                        }));
+                        this.reviewIndex = 0;
+                    } else {
+                        const fallbackReviews = JSON.parse(localStorage.getItem('cookabite_reviews') || '[]');
+                        if (fallbackReviews.length) {
+                            this.testimonials = this.testimonials.concat(fallbackReviews);
+                        }
+                    }
+                })
+                .catch((error) => {
+                    console.error('Tidak dapat memuat review dari server:', error);
+                    this.apiStatus = 'down';
+                    this.serverMessage = 'Review server tidak aktif di hosting ini. Ulasan hanya tersimpan lokal pada perangkat Anda.';
+                    const fallbackReviews = JSON.parse(localStorage.getItem('cookabite_reviews') || '[]');
+                    if (fallbackReviews.length) {
+                        this.testimonials = this.testimonials.concat(fallbackReviews);
+                    }
+                });
+        },
+        prevReview() {
+            this.reviewIndex = (this.reviewIndex - 1 + this.testimonials.length) % this.testimonials.length;
+        },
+        nextReview() {
+            this.reviewIndex = (this.reviewIndex + 1) % this.testimonials.length;
+        },
+        submitReview() {
+            if (!this.newName.trim() || !this.newComment.trim()) {
+                this.feedbackMsg = 'Nama dan ulasan wajib diisi.';
+                this.feedbackError = true;
+                return;
+            }
+
+            const payload = {
+                nama: this.newName,
+                rating: this.newRating,
+                ulasan: this.newComment
+            };
+
+            const apiUrl = './rating.php';
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('Rating server tidak tersedia (HTTP ' + response.status + ')');
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    if (data.success) {
+                        this.apiStatus = 'ready';
+                        this.testimonials.push({
+                            name: this.newName,
+                            rating: this.newRating,
+                            ulasan: this.newComment
+                        });
+                        this.reviewIndex = this.testimonials.length - 1;
+                        this.feedbackMsg = 'Ulasan Anda berhasil ditambahkan!';
+                        this.feedbackError = false;
+                        this.newName = '';
+                        this.newComment = '';
+                        this.newRating = 5;
+                        setTimeout(() => {
+                            this.feedbackMsg = '';
+                        }, 4000);
+                    } else {
+                        throw new Error(data.error || 'Gagal menyimpan ulasan.');
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                    this.apiStatus = 'down';
+                    this.serverMessage = 'Ulasan disimpan lokal karena server rating tidak tersedia di hosting ini.';
+                    const fallbackReviews = JSON.parse(localStorage.getItem('cookabite_reviews') || '[]');
+                    const review = { name: this.newName, rating: this.newRating, ulasan: this.newComment };
+                    fallbackReviews.push(review);
+                    localStorage.setItem('cookabite_reviews', JSON.stringify(fallbackReviews));
+                    this.testimonials.push(review);
+                    this.reviewIndex = this.testimonials.length - 1;
+                    this.feedbackMsg = 'Ulasan disimpan sementara karena server tidak tersedia.';
+                    this.feedbackError = false;
+                    this.newName = '';
+                    this.newComment = '';
+                    this.newRating = 5;
+                    setTimeout(() => {
+                        this.feedbackMsg = '';
+                    }, 4000);
+                });
+        }
+    }" x-init="init()">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+                <div class="inline-flex items-center gap-1.5 bg-brand-cream text-brand-brown px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                    <i class="fa-solid fa-comments"></i>
+                    <span>Kata Pelanggan Setia</span>
+                </div>
+                <h2 class="font-serif text-3xl sm:text-4xl font-black text-brand-browndark">
+                    Review Dari Mereka Yang Ketagihan
+                </h2>
+                <p class="text-brand-browndark/70">
+                    Keseimbangan rasa cokelat murni dan renyah selalu membawa kebahagiaan sejati ke depan pintu rumah Anda.
+                </p>
+            </div>
+
+            <div class="grid lg:grid-cols-12 gap-12 items-start">
+                
+                <!-- Slideable reviews container -->
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="relative bg-brand-light rounded-3xl p-8 border border-brand-cream shadow-md min-h-[220px] flex flex-col justify-between">
+                        
+                        <div class="space-y-4">
+                            <!-- Star ratings display -->
+                            <div class="flex text-amber-500 gap-1 text-lg">
+                                <template x-for="star in testimonials[reviewIndex].rating">
+                                    <i class="fa-solid fa-star"></i>
+                                </template>
+                                <template x-for="star in (5 - testimonials[reviewIndex].rating)">
+                                    <i class="fa-regular fa-star"></i>
+                                </template>
+                            </div>
+                            <!-- Comment Text -->
+                            <p class="text-base sm:text-lg italic text-brand-browndark/90 leading-relaxed" x-text="'&ldquo;' + testimonials[reviewIndex].ulasan + '&rdquo;'"></p>
+                        </div>
+
+                        <!-- Reviewer Identity -->
+                        <div class="flex items-center justify-between pt-6 border-t border-brand-cream/80">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-full bg-brand-cream text-brand-brown font-serif text-lg font-black flex items-center justify-center">
+                                    <span x-text="testimonials[reviewIndex].name.substring(0,2).toUpperCase()"></span>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-brand-browndark" x-text="testimonials[reviewIndex].name"></h4>
+                                    <p class="text-xs text-brand-brownlight">Pelanggan CookaBite</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Navigator button block inside layout -->
+                            <div class="flex items-center gap-2">
+                                <button @click="prevReview" class="w-10 h-10 rounded-full border border-brand-cream flex items-center justify-center hover:bg-brand-brown hover:text-brand-light transition-colors duration-200" aria-label="Review Sebelumnya">
+                                    <i class="fa-solid fa-chevron-left text-sm"></i>
+                                </button>
+                                <button @click="nextReview" class="w-10 h-10 rounded-full border border-brand-cream flex items-center justify-center hover:bg-brand-brown hover:text-brand-light transition-colors duration-200" aria-label="Review Berikutnya">
+                                    <i class="fa-solid fa-chevron-right text-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Interactive review generator form -->
+                <div class="lg:col-span-5 bg-brand-light rounded-3xl p-6 border border-brand-cream shadow-md space-y-4">
+                    <h3 class="font-serif text-xl font-bold text-brand-browndark">Berikan Ulasan Anda</h3>
+                    <p class="text-xs text-brand-browndark/70">Puas dengan cookies dan brownies buatan kami? Bagikan pengalaman manis Anda!</p>
+                    <div x-show="apiStatus === 'down'" x-transition class="rounded-2xl border border-amber-300 bg-amber-50 text-amber-900 p-4 text-sm">
+                        <strong>Catatan:</strong> Review server tidak aktif di hosting ini. Ulasan hanya akan tersimpan secara lokal di perangkat Anda dan tidak dapat dilihat oleh teman atau perangkat lain.
+                    </div>
+                    
+                    <form @submit.prevent="submitReview" class="space-y-4">
+                        <!-- Name input -->
+                        <div class="space-y-1">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-brand-brown">Nama Anda</label>
+                            <input type="text" x-model="newName" required placeholder="Contoh: Sarah Amanda" class="w-full px-4 py-2.5 text-sm rounded-xl border border-brand-creamdark focus:outline-none focus:ring-2 focus:ring-brand-brownlight bg-brand-light">
+                        </div>
+
+                        <!-- Stars selection input -->
+                        <div class="space-y-1">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-brand-brown">Beri Bintang</label>
+                            <div class="flex items-center gap-2 text-xl text-amber-500">
+                                <template x-for="starNum in [1,2,3,4,5]">
+                                    <button type="button" @click="newRating = starNum" class="focus:outline-none" aria-label="Bintang">
+                                        <i class="fa-star" :class="starNum <= newRating ? 'fa-solid' : 'fa-regular'"></i>
+                                    </button>
+                                </template>
+                            </div>
+                        </div>
+
+                        <!-- Comment input -->
+                        <div class="space-y-1">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-brand-brown">Ulasan Singkat</label>
+                            <textarea x-model="newComment" required rows="3" placeholder="Tulis kepuasan rasa kue kami di sini..." class="w-full px-4 py-2.5 text-sm rounded-xl border border-brand-creamdark focus:outline-none focus:ring-2 focus:ring-brand-brownlight bg-brand-light"></textarea>
+                        </div>
+
+                        <!-- Send Button -->
+                        <button type="submit" class="w-full py-3 bg-brand-brown hover:bg-brand-browndark text-brand-light font-bold rounded-xl text-sm transition-all duration-300">
+                            Kirim Ulasan
+                        </button>
+                    </form>
+
+                    <!-- Feedback message box -->
+                    <div x-show="feedbackMsg" x-transition class="p-3 rounded-xl text-xs text-center font-bold" :class="feedbackError ? 'bg-red-500 text-brand-light' : 'bg-green-500 text-brand-light'">
+                        <span x-text="feedbackMsg"></span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ SECTION -->
+    <section id="faq" class="py-24 bg-brand-light" x-data="{ activeFaq: null }">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+                <div class="inline-flex items-center gap-1.5 bg-brand-cream text-brand-brown px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                    <i class="fa-solid fa-circle-question"></i>
+                    <span>Tanya Jawab</span>
+                </div>
+                <h2 class="font-serif text-3xl sm:text-4xl font-black text-brand-browndark">Pertanyaan Umum</h2>
+                <p class="text-brand-browndark/70">Berikut adalah rincian informasi pemesanan pre-order untuk kenyamanan maksimal belanja Anda.</p>
+            </div>
+
+            <!-- Accordion FAQ Items -->
+            <div class="space-y-4">
+                
+                <!-- FAQ Item 1 -->
+                <div class="border border-brand-cream rounded-2xl overflow-hidden faq-item-1">
+                    <button @click="activeFaq === 1 ? activeFaq = null : activeFaq = 1" class="w-full flex justify-between items-center p-6 text-left font-bold text-brand-browndark hover:bg-brand-cream/30 focus:outline-none transition-colors duration-200">
+                        <span class="font-serif text-base sm:text-lg">Apakah produk ini ready stok?</span>
+                        <span class="text-brand-brown text-xl transform transition-transform duration-200" :class="activeFaq === 1 ? 'rotate-180' : ''">
+                            <i class="fa-solid fa-chevron-down text-sm"></i>
+                        </span>
+                    </button>
+                    <!-- UPDATE: Precise Answer Added -->
+                    <div x-show="activeFaq === 1" x-collapse class="faq-answer p-6 pt-0 text-sm text-brand-browndark/80 leading-relaxed">
+                        Tidak, semua produk CookaBite dibuat secara custom pre-order (PO) terlebih dahulu. Ini untuk memastikan produk dikirim dalam keadaan segar langsung dari oven (freshly baked) demi kepuasan lidah Anda.
+                    </div>
+                </div>
+
+                <!-- FAQ Item 2 -->
+                <div class="border border-brand-cream rounded-2xl overflow-hidden faq-item-2">
+                    <button @click="activeFaq === 2 ? activeFaq = null : activeFaq = 2" class="w-full flex justify-between items-center p-6 text-left font-bold text-brand-browndark hover:bg-brand-cream/30 focus:outline-none transition-colors duration-200">
+                        <span class="font-serif text-base sm:text-lg">Berapa lama masa simpan produk?</span>
+                        <span class="text-brand-brown text-xl transform transition-transform duration-200" :class="activeFaq === 2 ? 'rotate-180' : ''">
+                            <i class="fa-solid fa-chevron-down text-sm"></i>
+                        </span>
+                    </button>
+                    <!-- UPDATE: Precise Answer Added -->
+                    <div x-show="activeFaq === 2" x-collapse class="faq-answer p-6 pt-0 text-sm text-brand-browndark/80 leading-relaxed">
+                        Cookies & brownies kami dapat bertahan 7 hari di suhu ruang dan hingga 14 hari jika disimpan di dalam lemari es.
+                    </div>
+                </div>
+
+                <!-- FAQ Item 3 -->
+                <div class="border border-brand-cream rounded-2xl overflow-hidden faq-item-3">
+                    <button @click="activeFaq === 3 ? activeFaq = null : activeFaq = 3" class="w-full flex justify-between items-center p-6 text-left font-bold text-brand-browndark hover:bg-brand-cream/30 focus:outline-none transition-colors duration-200">
+                        <span class="font-serif text-base sm:text-lg">Apakah bisa custom brownies?</span>
+                        <span class="text-brand-brown text-xl transform transition-transform duration-200" :class="activeFaq === 3 ? 'rotate-180' : ''">
+                            <i class="fa-solid fa-chevron-down text-sm"></i>
+                        </span>
+                    </button>
+                    <div x-show="activeFaq === 3" x-collapse class="faq-answer p-6 pt-0 text-sm text-brand-browndark/80 leading-relaxed">
+                        Tentu saja bisa! Anda dapat melakukan kustomisasi topping favorit seperti keju, kacang almond, choco chips, oreo, atau menulis ucapan selamat ulang tahun/hadiah khusus. Silakan koordinasikan langsung melalui obrolan WhatsApp bersama admin kami.
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT SECTION -->
+    <section id="kontak" class="py-24 bg-brand-cream/20 border-t border-brand-cream">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+                <div class="inline-flex items-center gap-1.5 bg-brand-cream text-brand-brown px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span>Lokasi & Kontak</span>
+                </div>
+                <h2 class="font-serif text-3xl sm:text-4xl font-black text-brand-browndark">Kunjungi Atau Hubungi CookaBite</h2>
+                <p class="text-brand-browndark/70">
+                    Kami melayani pemesanan pre-order wilayah Kota Medan dan pengiriman kilat ke seluruh Indonesia.
+                </p>
+            </div>
+
+            <!-- Contacts and Location Grid -->
+            <div class="grid lg:grid-cols-12 gap-12 items-stretch">
+                
+                <!-- Contact Details Card -->
+                <div class="lg:col-span-5 bg-brand-light p-8 rounded-3xl border border-brand-cream shadow-md space-y-8">
+                    <h3 class="font-serif text-2xl font-bold text-brand-browndark">Hubungi Kami</h3>
+                    <p class="text-sm text-brand-browndark/70 leading-relaxed">
+                        Kami sangat senang mendengarkan pertanyaan Anda seputar pesanan khusus, kemitraan UMKM, maupun pemesanan hampers acara istimewa.
+                    </p>
+
+                    <!-- Dynamic list of clickable items -->
+                    <div class="space-y-6">
+                        
+                        <!-- WhatsApp -->
+                        <a href="https://wa.me/628116350610?text=Halo%20Cookabite!%20Saya%20tertarik%20dengan%20produk%20anda" target="_blank" class="flex items-center gap-4 p-3 rounded-2xl hover:bg-brand-cream/30 transition-colors group">
+                            <div class="w-12 h-12 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
+                                <i class="fa-brands fa-whatsapp"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs text-brand-brownlight font-bold block uppercase tracking-wider">WhatsApp Admin</span>
+                                <span class="text-sm font-semibold text-brand-browndark break-all">+62 811-6350-610</span>
+                            </div>
+                        </a>
+
+                        <!-- Instagram -->
+                        <a href="https://www.instagram.com/cookabite.id?igsh=M3diYWp5cjMwaGd6" target="_blank" class="flex items-center gap-4 p-3 rounded-2xl hover:bg-brand-cream/30 transition-colors group">
+                            <div class="w-12 h-12 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center text-xl flex-shrink-0 group-hover:scale-110 transition-transform">
+                                <i class="fa-brands fa-instagram"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs text-brand-brownlight font-bold block uppercase tracking-wider">Instagram Resmi</span>
+                                <span class="text-sm font-semibold text-brand-browndark break-all">@cookabite.id</span>
+                            </div>
+                        </a>
+
+                        <!-- Address -->
+                        <div class="flex items-center gap-4 p-3 rounded-2xl bg-brand-cream/10">
+                            <div class="w-12 h-12 rounded-full bg-brand-cream text-brand-brown flex items-center justify-center text-xl flex-shrink-0">
+                                <i class="fa-solid fa-map-location-dot"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs text-brand-brownlight font-bold block uppercase tracking-wider">Alamat Dapur Utama</span>
+                                <!-- UPDATE: Correct Address label -->
+                                <span class="text-xs text-brand-browndark/90 leading-relaxed block">
+                                    Jln. Harmonika Gg. Melati No.7, Tj. Sari, Kec. Medan Selayang, Kota Medan, Sumatera Utara 20132
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- UPDATE: Google Maps Embed URL corrected to focus precisely on Jln. Harmonika Gg. Melati No.7 -->
+                <div class="lg:col-span-7 bg-brand-light rounded-3xl overflow-hidden border border-brand-cream shadow-md min-h-[350px] relative">
+                    <iframe src="https://maps.google.com/maps?q=Jln.%20Harmonika%20Gg.%20Melati%20No.7,%20Tj.%20Sari,%20Kec.%20Medan%20Selayang,%20Kota%20Medan,%20Sumatera%20Utara%2020132&t=&z=17&ie=UTF8&iwloc=&output=embed" class="w-full h-full border-0 min-h-[350px]" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER SECTION -->
+    <footer class="bg-brand-browndark text-brand-cream pt-20 pb-8 border-t border-brand-brown">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-12 mb-12">
+                
+                <!-- Brand Info Area -->
+                <div class="space-y-4">
+                    <a href="#home" class="flex items-center gap-3">
+                        <img src="cookabite-logo.jpg" alt="CookaBite Logo Footer" class="h-10 w-10 rounded-full object-cover border border-brand-brownlight">
+                        <span class="font-serif text-2xl font-black text-brand-light tracking-tight">CookaBite</span>
+                    </a>
+                    <!-- UPDATE: Tagline changed here as well -->
+                    <p class="text-xs text-brand-cream/70 leading-relaxed">
+                        Cita rasa premium brownies fudgy murni dan cookies yang dibuat penuh kasih sayang. Baked with Love, to Make Your Happiness.
+                    </p>
+                </div>
+
+                <!-- Navigation Quick Links -->
+                <div class="space-y-4">
+                    <h4 class="font-bold text-brand-light text-sm tracking-wider uppercase">Menu Navigasi</h4>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <a href="#home" class="hover:text-brand-brownlight transition-colors duration-200">Beranda</a>
+                        <a href="#produk" class="hover:text-brand-brownlight transition-colors duration-200">Produk</a>
+                        <a href="#terlaris" class="hover:text-brand-brownlight transition-colors duration-200">Terlaris</a>
+                        <a href="#tentang-kami" class="hover:text-brand-brownlight transition-colors duration-200">Tentang Kami</a>
+                        <a href="#testimoni" class="hover:text-brand-brownlight transition-colors duration-200">Testimoni</a>
+                        <a href="#faq" class="hover:text-brand-brownlight transition-colors duration-200">FAQ</a>
+                        <a href="#kontak" class="hover:text-brand-brownlight transition-colors duration-200">Kontak</a>
+                    </div>
+                </div>
+
+                <!-- Contact Fast view -->
+                <div class="space-y-4 text-xs">
+                    <h4 class="font-bold text-brand-light text-sm tracking-wider uppercase">Hubungi Kami</h4>
+                    <!-- UPDATE: Correct Address label -->
+                    <p class="leading-relaxed text-brand-cream/80">📍 Jln. Harmonika Gg. Melati No.7, Tj. Sari, Kec. Medan Selayang, Kota Medan, Sumatera Utara 20132</p>
+                    <p class="text-brand-cream/80"><i class="fa-brands fa-instagram text-brand-accent mr-2"></i> @cookabite.id</p>
+                    <p class="text-brand-cream/80">📞 +62 811-6350-610</p>
+                </div>
+
+                <!-- Social and Trust Area -->
+                <div class="space-y-4">
+                    <h4 class="font-bold text-brand-light text-sm tracking-wider uppercase">Media Sosial Kami</h4>
+                    <div class="flex items-center gap-3">
+                        <a href="https://wa.me/628116350610?text=Halo%20Cookabite!%20Saya%20tertarik%20dengan%20produk%20anda" target="_blank" class="w-10 h-10 rounded-full bg-brand-brown/40 border border-brand-brownlight/30 flex items-center justify-center text-brand-light hover:bg-brand-brown transition-colors duration-200" aria-label="WhatsApp CookaBite">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </a>
+                        <a href="https://www.instagram.com/cookabite.id?igsh=M3diYWp5cjMwaGd6" target="_blank" class="w-10 h-10 rounded-full bg-brand-brown/40 border border-brand-brownlight/30 flex items-center justify-center text-brand-light hover:bg-brand-brown transition-colors duration-200" aria-label="Instagram CookaBite">
+                            <i class="fa-brands fa-instagram"></i>
+                        </a>
+                    </div>
+                    <div class="pt-4 border-t border-brand-brownlight/20 flex flex-wrap gap-2">
+                        <span class="bg-brand-brown/30 px-2.5 py-1 rounded text-[9px] font-black tracking-widest text-brand-brownlight border border-brand-brownlight/20">100% HIGIENIS</span>
+                        <span class="bg-brand-brown/30 px-2.5 py-1 rounded text-[9px] font-black tracking-widest text-brand-brownlight border border-brand-brownlight/20">PRE-ORDER</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Bottom Copyright bar -->
+            <div class="border-t border-brand-brownlight/10 pt-8 text-center text-xs text-brand-cream/50">
+                <p>Copyright &copy; 2026 CookaBite. All Rights Reserved.</p>
+                <p class="mt-1 text-[10px] text-brand-cream/30">Dibuat secara profesional untuk UMKM kuliner modern & premium.</p>
+            </div>
+        </div>
+    </footer>
+</div>
+
+</body>
+</html>

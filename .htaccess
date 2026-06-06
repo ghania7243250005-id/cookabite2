@@ -1,0 +1,5 @@
+# If using Apache, serve cookabite.html as the default homepage
+DirectoryIndex cookabite.html index.php index.html
+
+# Prevent directory browsing
+Options -Indexes
